@@ -1,22 +1,25 @@
 """
-Entry point for Render.
-Starts the Flask web server in a background thread, then runs the Pyrogram bot.
+Render entry point.
+1. Starts Flask web server on $PORT in a background thread (satisfies Render)
+2. Starts the Pyrogram Telegram bot (blocking main thread)
 """
 import threading
 import logging
-from server import run as run_server
+import os
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO
 )
+log = logging.getLogger(__name__)
 
-# Start web server in background thread (keeps Render port alive)
+# Start web server in background thread FIRST so Render sees the port
+from server import run as run_server
 t = threading.Thread(target=run_server, daemon=True)
 t.start()
-print("✅ Web server started in background")
+log.info(f"✅ Web server started on port {os.environ.get('PORT', 8080)}")
 
-# Start the Telegram bot (blocking)
+# Now start the bot (this blocks forever)
 from main import app
-print("🤖 Starting Telegram bot...")
+log.info("🤖 Starting Telegram bot...")
 app.run()
