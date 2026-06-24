@@ -255,7 +255,7 @@ def user_guard(func):
         vip   = is_vip(uid)
 
         if get_setting("maintenance") and not admin:
-            await message.reply("🔧 *Bot is under maintenance.* Please try again later.", parse_mode="markdown")
+            await message.reply("🔧 *Bot is under maintenance.* Please try again later.", parse_mode="MARKDOWN")
             return
 
         if not admin:
@@ -263,7 +263,7 @@ def user_guard(func):
             if not_joined:
                 await message.reply(
                     "⚠️ *You must join our channels to use this bot!*",
-                    parse_mode="markdown",
+                    parse_mode="MARKDOWN",
                     reply_markup=fj_keyboard(not_joined),
                 )
                 return
@@ -271,14 +271,14 @@ def user_guard(func):
         if not admin and not vip:
             cd = cooldown_left(uid)
             if cd > 0:
-                m = await message.reply(f"⏳ *Cooldown!* Please wait *{cd}s*.", parse_mode="markdown")
+                m = await message.reply(f"⏳ *Cooldown!* Please wait *{cd}s*.", parse_mode="MARKDOWN")
                 asyncio.create_task(delete_after(client, message.chat.id, [m.id], 10))
                 return
             hit, count, limit = daily_status(uid)
             if hit:
                 m = await message.reply(
                     f"📛 *Daily limit reached!* {count}/{limit} used today.\nResets in 24h.",
-                    parse_mode="markdown"
+                    parse_mode="MARKDOWN"
                 )
                 asyncio.create_task(delete_after(client, message.chat.id, [m.id], 30))
                 return
@@ -303,7 +303,7 @@ async def cmd_start(client: Client, message: Message):
         if not_joined:
             await message.reply(
                 "⚠️ *You must join our channels to use this bot!*\nJoin all channels below, then click Done.",
-                parse_mode="markdown",
+                parse_mode="MARKDOWN",
                 reply_markup=fj_keyboard(not_joined),
             )
             return
@@ -312,7 +312,7 @@ async def cmd_start(client: Client, message: Message):
         f"👋 Hi **{message.from_user.mention}**!\n\n"
         "🔗 *Link Bypasser Bot* — Send me any supported shortlink and I'll get you the real link.\n\n"
         "📌 Send /help to see all supported sites.",
-        parse_mode="markdown",
+        parse_mode="MARKDOWN",
         reply_markup=InlineKeyboardMarkup([[
             InlineKeyboardButton("🌐 Source Code", url="https://github.com/bipinkrish/Link-Bypasser-Bot")
         ]]),
@@ -331,13 +331,13 @@ async def cb_check_join(client: Client, query: CallbackQuery):
     if not_joined:
         await query.edit_message_text(
             "❌ *You haven't joined all channels yet!* Please join and try again.",
-            parse_mode="markdown",
+            parse_mode="MARKDOWN",
             reply_markup=fj_keyboard(not_joined),
         )
     else:
         await query.edit_message_text(
             "✅ *Great!* You've joined all channels.\nNow send me any link to bypass!",
-            parse_mode="markdown",
+            parse_mode="MARKDOWN",
         )
     await query.answer()
 
@@ -413,7 +413,7 @@ async def cmd_stats(client: Client, message: Message):
         f"📛 Daily Limit: `{lim}`\n"
         f"📢 Force Join Channels: `{fj}`\n"
         f"🔗 Custom Bypasses: `{cb}`",
-        parse_mode="markdown",
+        parse_mode="MARKDOWN",
     )
 
 
@@ -426,7 +426,7 @@ async def cmd_maintenance(client: Client, message: Message):
         return await message.reply("Usage: /maintenance on|off")
     val = args[0].lower() == "on"
     set_setting("maintenance", val)
-    await message.reply(f"🔧 Maintenance mode: {'*ON*' if val else '*OFF*'}", parse_mode="markdown")
+    await message.reply(f"🔧 Maintenance mode: {'*ON*' if val else '*OFF*'}", parse_mode="MARKDOWN")
 
 
 @app.on_message(filters.command("setcooldown"))
@@ -439,7 +439,7 @@ async def cmd_setcooldown(client: Client, message: Message):
     try:
         secs = int(args[0])
         set_setting("cooldown_seconds", secs)
-        await message.reply(f"✅ Cooldown set to *{secs}s*.", parse_mode="markdown")
+        await message.reply(f"✅ Cooldown set to *{secs}s*.", parse_mode="MARKDOWN")
     except ValueError:
         await message.reply("❌ Invalid number.")
 
@@ -449,7 +449,7 @@ async def cmd_removecooldown(client: Client, message: Message):
     if not admin_check(message.from_user.id):
         return await message.reply("❌ Admins only.")
     set_setting("cooldown_seconds", 0)
-    await message.reply("✅ Cooldown *removed*.", parse_mode="markdown")
+    await message.reply("✅ Cooldown *removed*.", parse_mode="MARKDOWN")
 
 
 @app.on_message(filters.command("setlimit"))
@@ -462,7 +462,7 @@ async def cmd_setlimit(client: Client, message: Message):
     try:
         n = int(args[0])
         set_setting("daily_limit", n)
-        await message.reply(f"✅ Daily limit set to *{n}*.", parse_mode="markdown")
+        await message.reply(f"✅ Daily limit set to *{n}*.", parse_mode="MARKDOWN")
     except ValueError:
         await message.reply("❌ Invalid number.")
 
@@ -472,7 +472,7 @@ async def cmd_removelimit(client: Client, message: Message):
     if not admin_check(message.from_user.id):
         return await message.reply("❌ Admins only.")
     set_setting("daily_limit", 0)
-    await message.reply("✅ Daily limit *removed*.", parse_mode="markdown")
+    await message.reply("✅ Daily limit *removed*.", parse_mode="MARKDOWN")
 
 
 @app.on_message(filters.command("addadmin"))
@@ -492,9 +492,9 @@ async def cmd_addadmin(client: Client, message: Message):
     s["admins"].append({"id": uid, "expiry": expiry})
     save_settings(s)
     dur = f"{days} days" if days else "permanent"
-    await message.reply(f"✅ `{uid}` added as admin ({dur}).", parse_mode="markdown")
+    await message.reply(f"✅ `{uid}` added as admin ({dur}).", parse_mode="MARKDOWN")
     try:
-        await client.send_message(uid, f"🛡️ You have been *added as Admin* ({dur}).", parse_mode="markdown")
+        await client.send_message(uid, f"🛡️ You have been *added as Admin* ({dur}).", parse_mode="MARKDOWN")
     except Exception:
         pass
 
@@ -514,9 +514,9 @@ async def cmd_removeadmin(client: Client, message: Message):
     s["admins"] = [a for a in s["admins"] if a["id"] != uid]
     save_settings(s)
     if len(s["admins"]) < before:
-        await message.reply(f"✅ `{uid}` removed from admins.", parse_mode="markdown")
+        await message.reply(f"✅ `{uid}` removed from admins.", parse_mode="MARKDOWN")
         try:
-            await client.send_message(uid, "🚫 Your *Admin access* has been removed.", parse_mode="markdown")
+            await client.send_message(uid, "🚫 Your *Admin access* has been removed.", parse_mode="MARKDOWN")
         except Exception:
             pass
     else:
@@ -537,12 +537,12 @@ async def cmd_addvip(client: Client, message: Message):
     expiry = int(time.time()) + days * 86400 if days else 0
     update_user(uid, {"vip": True, "vip_expiry": expiry})
     dur = f"{days} days" if days else "permanent"
-    await message.reply(f"⭐ `{uid}` is now VIP ({dur}).", parse_mode="markdown")
+    await message.reply(f"⭐ `{uid}` is now VIP ({dur}).", parse_mode="MARKDOWN")
     try:
         await client.send_message(
             uid,
             f"⭐ *Congratulations!* You've been granted *VIP* access ({dur}).\nEnjoy unlimited bypasses!",
-            parse_mode="markdown"
+            parse_mode="MARKDOWN"
         )
     except Exception:
         pass
@@ -559,9 +559,9 @@ async def cmd_removevip(client: Client, message: Message):
     if not uid:
         return await message.reply("❌ User not found.")
     update_user(uid, {"vip": False, "vip_expiry": 0})
-    await message.reply(f"✅ VIP removed from `{uid}`.", parse_mode="markdown")
+    await message.reply(f"✅ VIP removed from `{uid}`.", parse_mode="MARKDOWN")
     try:
-        await client.send_message(uid, "❌ Your *VIP access* has been removed.", parse_mode="markdown")
+        await client.send_message(uid, "❌ Your *VIP access* has been removed.", parse_mode="MARKDOWN")
     except Exception:
         pass
 
@@ -577,7 +577,7 @@ async def cmd_ban(client: Client, message: Message):
     if not uid:
         return await message.reply("❌ User not found.")
     update_user(uid, {"banned": True})
-    await message.reply(f"🚫 `{uid}` has been *banned*.", parse_mode="markdown")
+    await message.reply(f"🚫 `{uid}` has been *banned*.", parse_mode="MARKDOWN")
 
 
 @app.on_message(filters.command("unban"))
@@ -591,7 +591,7 @@ async def cmd_unban(client: Client, message: Message):
     if not uid:
         return await message.reply("❌ User not found.")
     update_user(uid, {"banned": False})
-    await message.reply(f"✅ `{uid}` has been *unbanned*.", parse_mode="markdown")
+    await message.reply(f"✅ `{uid}` has been *unbanned*.", parse_mode="MARKDOWN")
 
 
 @app.on_message(filters.command("broadcast"))
@@ -610,12 +610,12 @@ async def cmd_broadcast(client: Client, message: Message):
     status = await message.reply(f"📢 Broadcasting to {len(ids)} users...")
     for uid in ids:
         try:
-            await client.send_message(uid, f"📢 **Broadcast**\n\n{text}", parse_mode="markdown")
+            await client.send_message(uid, f"📢 **Broadcast**\n\n{text}", parse_mode="MARKDOWN")
             sent += 1
             await asyncio.sleep(0.05)
         except Exception:
             failed += 1
-    await status.edit(f"✅ *Broadcast done!*\n\n✉️ Sent: `{sent}`\n❌ Failed: `{failed}`", parse_mode="markdown")
+    await status.edit(f"✅ *Broadcast done!*\n\n✉️ Sent: `{sent}`\n❌ Failed: `{failed}`", parse_mode="MARKDOWN")
 
 
 @app.on_message(filters.command("addforcejoin"))
@@ -626,7 +626,7 @@ async def cmd_addforcejoin(client: Client, message: Message):
     if not args:
         return await message.reply(
             "Usage: /addforcejoin <@username or channel_id>\n\n⚠️ Make bot *admin* in the channel first!",
-            parse_mode="markdown"
+            parse_mode="MARKDOWN"
         )
     identifier = args[0].strip()
     try:
@@ -641,7 +641,7 @@ async def cmd_addforcejoin(client: Client, message: Message):
         save_settings(s)
         await message.reply(
             f"✅ Added *{chat.title}* to force join.\nTotal: `{len(s['force_join_channels'])}` channel(s)",
-            parse_mode="markdown"
+            parse_mode="MARKDOWN"
         )
     except Exception as e:
         await message.reply(f"❌ Error: {e}\n\nMake sure bot is admin in that channel.")
@@ -659,7 +659,7 @@ async def cmd_removeforcejoin(client: Client, message: Message):
         lst = "\n".join([f"• `{c['id']}` — {c['title']}" for c in channels])
         return await message.reply(
             f"📢 **Force Join Channels:**\n{lst}\n\nUsage: /removeforcejoin <channel_id>",
-            parse_mode="markdown"
+            parse_mode="MARKDOWN"
         )
     identifier = args[0].strip()
     s = load_settings()
@@ -686,7 +686,7 @@ async def cmd_addbypass(client: Client, message: Message):
     s = load_settings()
     s["custom_bypasses"][domain] = "generic"
     save_settings(s)
-    await message.reply(f"✅ `{domain}` added. The bot will now attempt to bypass links from this domain.", parse_mode="markdown")
+    await message.reply(f"✅ `{domain}` added. The bot will now attempt to bypass links from this domain.", parse_mode="MARKDOWN")
 
 
 @app.on_message(filters.command("removebypass"))
@@ -699,13 +699,13 @@ async def cmd_removebypass(client: Client, message: Message):
         if not customs:
             return await message.reply("No custom bypasses added.")
         lst = "\n".join([f"• `{d}`" for d in customs])
-        return await message.reply(f"🔗 **Custom Bypasses:**\n{lst}\n\nUsage: /removebypass <domain>", parse_mode="markdown")
+        return await message.reply(f"🔗 **Custom Bypasses:**\n{lst}\n\nUsage: /removebypass <domain>", parse_mode="MARKDOWN")
     domain = args[0].lower().lstrip("www.")
     s = load_settings()
     if domain in s["custom_bypasses"]:
         del s["custom_bypasses"][domain]
         save_settings(s)
-        await message.reply(f"✅ `{domain}` removed.", parse_mode="markdown")
+        await message.reply(f"✅ `{domain}` removed.", parse_mode="MARKDOWN")
     else:
         await message.reply("❌ Domain not found in custom list.")
 
@@ -739,3 +739,4 @@ async def auto_leave(client: Client, message: Message):
 if __name__ == "__main__":
     logger.info("Bot starting...")
     app.run()
+       
