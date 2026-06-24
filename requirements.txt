@@ -3,11 +3,10 @@ cloudscraper==1.2.71
 beautifulsoup4==4.12.3
 python-dotenv==1.0.0
 kurigram==2.2.0
-PyroTgCrypto==1.2.7
+tgcrypto==1.2.5
 lxml==5.1.0
 cfscrape==2.1.1
 urllib3==1.26.18
 flask==3.0.2
 curl-cffi==0.6.2
 urlextract==1.9.0
-
