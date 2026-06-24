@@ -1,20 +1,21 @@
 """
-Minimal web server to keep Render happy (no "no open ports" error).
-Runs in a separate thread alongside the Pyrogram bot.
+Minimal web server to satisfy Render's port requirement.
+Runs in a background thread alongside the Pyrogram bot.
 """
 from flask import Flask
 import os
 
-app = Flask(__name__)
+flask_app = Flask(__name__)
 
-@app.route("/")
+@flask_app.route("/")
 def home():
     return "<h2>✅ Link Bypasser Bot is Running</h2>", 200
 
-@app.route("/health")
+@flask_app.route("/health")
 def health():
     return "OK", 200
 
 def run():
     port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port, use_reloader=False)
+    flask_app.run(host="0.0.0.0", port=port, use_reloader=False, threaded=True)
+    
